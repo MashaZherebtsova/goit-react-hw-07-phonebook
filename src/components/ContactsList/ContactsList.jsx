@@ -1,19 +1,24 @@
 import React from 'react';
-import propTypes from 'prop-types';
+
 import css from './ContactList.module.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { getFilteredContacts } from 'redux/selectors';
-import { deleteContact } from 'redux/createSlise';
+import { selectFilteredContacts } from 'redux/selectors';
+import { deleteContact, fetchContacts } from 'redux/operation';
+import { useEffect } from 'react';
 
 export function ContactsList() {
-  const filteredContact = useSelector(getFilteredContacts);
+  const filteredContacts = useSelector(selectFilteredContacts);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <ul className={css.contactList}>
-      {filteredContact.map(contact => {
+      {filteredContacts.map(contact => {
         return (
-          <li key={contact.id}>
+          <li key={contact.id} id={contact.id}>
             <span>{contact.name}</span>:<span>{contact.number}</span>
             <button
               className={css.contactListBtn}
@@ -27,14 +32,3 @@ export function ContactsList() {
     </ul>
   );
 }
-
-ContactsList.propTypes = {
-  contacts: propTypes.arrayOf(
-    propTypes.exact({
-      id: propTypes.string.isRequired,
-      name: propTypes.string.isRequired,
-      number: propTypes.string.isRequired,
-    })
-  ),
-  deleteContact: propTypes.func.isRequired,
-};
